@@ -39,8 +39,10 @@ print("train_split: ", train_split)
 X_Train, y_train = X[:train_split], y[:train_split]
 X_test, y_test = X[train_split:], y[train_split:]
 
+# Have 40 X_Train data, 40 y_train data and 10 each for testing x and y
 print(len(X_Train), len(y_train), len(X_test), len(y_test))
 
+# Visualizing the whole thing:
 def plot_predictions(train_data=X_Train, 
                      train_labels=y_train, 
                      test_data=X_test, 
