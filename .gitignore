@@ -1,0 +1,13 @@
+# Python virtual environments
+.venv/
+venv/
+rocm_venv/
+
+# Standard Python build/cache files
+__pycache__/
+*.pyc
+
+# Common IDE/OS files
+.vscode/
+.idea/
+.DS_Store

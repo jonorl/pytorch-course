@@ -1,0 +1,1 @@
+source rocm_venv/bin/activate
