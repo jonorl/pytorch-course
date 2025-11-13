@@ -4,7 +4,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
-torch.set_default_device('cuda')
+
+# Device agnostic set up
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+torch.set_default_device(device)
 
 ## Loading a pytorch model (state dict)
 
