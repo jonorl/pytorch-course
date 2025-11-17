@@ -176,3 +176,59 @@ print(torch.eq(y_preds.squeeze(), y_pred_labels.squeeze()))
 
 print("finally...\n", y_preds.squeeze()) # Compare both random values (untrained)
 
+torch.cuda.manual_seed(42) #alternatively torch.manual_seed(42)
+
+epochs = 100
+
+# Put data to target device
+
+X_train, y_train = X_train.to(device), y_train.to(device)
+X_test, y_test = X_test.to(device), y_test.to(device)
+
+
+## Build training and evaluation loop
+for epoch in range(epochs):
+    model_0.train()
+
+    # 1. Forward pass
+    y_logits = model_0(X_train).squeeze() # remove extra dimension from tensor
+    y_pred = torch.round(torch.sigmoid(y_logits)) # logits -> pred probs -> labels
+
+    # 2. Calculate loss and accuracy (latter is optional)
+    loss = loss_fn(y_logits, # nn.BCEWithLogitsLoss epxect raw logits as input
+                   y_train)
+    
+    acc = accuracy_fn(y_true=y_train,
+                      y_pred=y_pred)
+    
+    # 3. Optimiser zero grad
+    optimiser.zero_grad()
+
+    # 4. Loss backward (backpropagation)
+    loss.backward()
+
+    # 5. Optimiser step
+    optimiser.step()
+
+    ## Testing
+
+    model_0.eval()
+    with torch.inference_mode():
+        # 1. Forward pass
+        test_logits = model_0(X_test).squeeze()
+        test_pred = torch.round(torch.sigmoid(test_logits))
+        
+        # 2. calculate test loss/acc
+        test_loss = loss_fn(test_logits,
+                            y_test)
+        test_acc = accuracy_fn(y_true=y_test,
+                               y_pred=test_pred)
+        
+        # Print out what's happening
+        if epoch % 10 == 0:
+            print(f"Epoch: {epoch}\n Loss: {loss:5f}\n Acc: {acc:.2f}%\n Test Loss: {test_loss:.5f}\n Test acc: {test_acc:.2f}%")
+
+## Looks like the model isn't learning anything
+
+# Let's visualise why
+
