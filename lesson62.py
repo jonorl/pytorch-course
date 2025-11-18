@@ -6,6 +6,7 @@ import pandas as pd
 import sklearn
 from sklearn.datasets import make_circles
 from sklearn.model_selection import train_test_split
+from helper_functions import plot_predictions, plot_decision_boundary
 
 ## Setup
 
@@ -50,7 +51,7 @@ MODEL_SAVE_PATH = MODEL_PATH / MODEL_NAME
 ## End of setup
 
 ## Make 1000 samples
-n_samples = 1000
+n_samples = 100
 
 # Create circles
 
@@ -101,9 +102,12 @@ class CircleModelV0(nn.Module):
     def __init__(self):
         super().__init__()
         # Create nn.linear layers capable of handling our data
-        self.layer_1 = nn.Linear(in_features=2, out_features=5)
+        self.layer_1 = nn.Linear(in_features=2, out_features=128)
         # out features from previous layer needs to match in features
-        self.layer_2 = nn.Linear(in_features=5, out_features=1) 
+        self.layer_2 = nn.Linear(in_features=128, out_features=256) 
+        # test layer
+        self.layer_3 = nn.Linear(in_features=256, out_features=128) 
+        self.layer_4 = nn.Linear(in_features=128, out_features=1) 
     
     # Define a forward method that outlines forward pass
     def forward(self, x):
@@ -138,7 +142,7 @@ print(f"\nFirst 10 labels:\n{y_test[:10]}")
 
 loss_fn = nn.BCEWithLogitsLoss() # this has the sigmoid activation functions built-in
 optimiser = torch.optim.SGD(params=model_0.parameters(),
-                            lr=0.1)
+                            lr=0.01)
 
 # Calculate accuracy (out of 100 examples, how many did the model get right)
 
@@ -178,7 +182,7 @@ print("finally...\n", y_preds.squeeze()) # Compare both random values (untrained
 
 torch.cuda.manual_seed(42) #alternatively torch.manual_seed(42)
 
-epochs = 100
+epochs = 200
 
 # Put data to target device
 
@@ -230,5 +234,26 @@ for epoch in range(epochs):
 
 ## Looks like the model isn't learning anything
 
-# Let's visualise why
+# Let's visualise why - uncomment to see it
+
+# plt.figure(figsize=(12, 6))
+# plt.subplot(1,2,1)
+# plt.title("Train")
+# plot_decision_boundary(model_0, X_train, y_train)
+# plt.show()
+# plt.figure(figsize=(12, 6))
+# plt.subplot(1,2,2)
+# plt.title("Test")
+# plot_decision_boundary(model_0, X_test,y_test)
+# plt.show()
+
+## How to improve model
+
+# Add more layer (more steps into neural network
+# Add more hidden units (nodes)
+# Fit for longer (more epochs)
+# Changing the activation function
+# Changing the learning rate (steps on each epoch)
+# Change the loss function (sigmoid/Binary cross entropy)
+
 
