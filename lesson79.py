@@ -1,3 +1,5 @@
+## Non-linear function
+
 import torch
 from torch import nn ##neural network
 import matplotlib.pyplot as plt
@@ -72,35 +74,33 @@ X_train, X_test, y_train, y_test = train_test_split(X,
                                                     test_size=0.2, #20% of data will be test
                                                     random_state=42)
 
-class CircleModelV1(nn.Module):
+## Building a NON-linear model
+
+class CircleModelV2(nn.Module):
     def __init__(self):
         super().__init__()
-        self.layer_1 = nn.Linear(in_features=2, out_features=10)
-        self.layer_2 = nn.Linear(in_features=10, out_features=10)
-        self.layer_3 = nn.Linear(in_features=10, out_features=1)
-    
-    def forward(self, x):
-        # z = self.layer_1(x)
-        # z = self.layer_2(z)
-        # z = self.layer_3(z)
+        self.layer_1 = nn.Linear(in_features=2, out_features=128)
+        self.layer_2 = nn.Linear(in_features=128, out_features=256)
+        self.layer_3 = nn.Linear(in_features=256, out_features=1)
+        # Non-linear activation function
+        self.relu = nn.ReLU() # turns negative numbers to 0 and leave positive ints as they are
 
-        # Or much simpler:
-        return self.layer_3(self.layer_2(self.layer_1(x)))
+    def forward(self, x):
+        return self.layer_3(self.relu(self.layer_2(self.relu(self.layer_1(x)))))
     
-model_1 = CircleModelV1().to(device)
-print(model_1.state_dict())
+model_3 = CircleModelV2().to(device)
 
 loss_fn = nn.BCEWithLogitsLoss()
-optimiser = torch.optim.SGD(params=model_1.parameters(),
+optimiser = torch.optim.SGD(params=model_3.parameters(),
                             lr=0.1)
 
 torch.manual_seed(42)
 torch.cuda.manual_seed(42)
 
-epochs = 1000
-
 X_train, y_train = X_train.to(device), y_train.to(device)
 X_test, y_test = X_test.to(device), y_test.to(device)
+
+epochs = 501
 
 def accuracy_fn(y_true, y_pred):
     correct = torch.eq(y_true,y_pred).sum().item() # How many of y_true match y_pred
@@ -108,8 +108,8 @@ def accuracy_fn(y_true, y_pred):
     return acc
 
 for epoch in range(epochs):
-    model_1.train()
-    y_logits = model_1(X_train).squeeze()
+    model_3.train()
+    y_logits = model_3(X_train).squeeze()
     y_pred = torch.round(torch.sigmoid(y_logits)) #logits -> pred probs -> pred labels
 
     loss = loss_fn(y_logits, y_train)
@@ -124,9 +124,9 @@ for epoch in range(epochs):
 
     ## Testing
 
-    model_1.eval()
+    model_3.eval()
     with torch.inference_mode():
-        test_logits = model_1(X_test).squeeze()
+        test_logits = model_3(X_test).squeeze()
         test_pred = torch.round(torch.sigmoid(test_logits))
 
     test_loss = loss_fn(test_logits,
@@ -144,10 +144,10 @@ for epoch in range(epochs):
 plt.figure(figsize=(12, 6))
 plt.subplot(1,2,1)
 plt.title("Train")
-plot_decision_boundary(model_1, X_train, y_train)
+plot_decision_boundary(model_3, X_train, y_train)
 plt.show()
 plt.figure(figsize=(12, 6))
 plt.subplot(1,2,2)
 plt.title("Test")
-plot_decision_boundary(model_1, X_test,y_test)
+plot_decision_boundary(model_3, X_test,y_test)
 plt.show()
