@@ -139,15 +139,47 @@ for epoch in range(epochs):
     if epoch % 100 == 0:
         print(f"Epoch: {epoch} | Loss: {loss:.5f} | Acc: {acc:.2f}% | Test loss: {test_loss:.5f} | Test acc: {test_acc:.2f}")
 
-## Still not working, visualise:
+## Now the circle is displayed properly (uncomment to see):
 
-plt.figure(figsize=(12, 6))
-plt.subplot(1,2,1)
-plt.title("Train")
-plot_decision_boundary(model_3, X_train, y_train)
-plt.show()
-plt.figure(figsize=(12, 6))
-plt.subplot(1,2,2)
-plt.title("Test")
-plot_decision_boundary(model_3, X_test,y_test)
-plt.show()
+# plt.figure(figsize=(12, 6))
+# plt.subplot(1,2,1)
+# plt.title("Train")
+# plot_decision_boundary(model_3, X_train, y_train)
+# plt.show()
+# plt.figure(figsize=(12, 6))
+# plt.subplot(1,2,2)
+# plt.title("Test")
+# plot_decision_boundary(model_3, X_test,y_test)
+# plt.show()
+
+## Building non-linear functions from scratch.
+
+# Create a tensor
+
+A = torch.arange(-10,10,1, dtype=torch.float32)
+
+# plt.plot(A.to('cpu'))
+# plt.show()
+# plt.plot(torch.relu(A.to('cpu')))
+# plt.show()
+
+# Relu essentially picks the max between a given number and 0
+def relu(x: torch.Tensor) -> torch.Tensor:
+    return torch.maximum(torch.tensor(0, device=x.device),x)
+
+print (relu(A))
+
+# plt.plot(relu(A.to('cpu')))
+# plt.show()
+
+# Now let's do the same for sigmoid
+
+def sigmoid(x: torch.Tensor)  -> torch.Tensor:
+    return 1 / (1 + torch.exp(torch.tensor(-x,device=x.device)))
+
+print(sigmoid(A))
+
+# plt.plot(torch.sigmoid(A.to('cpu')))
+# plt.show()
+# plt.plot(sigmoid(A.to('cpu')))
+# plt.show()
