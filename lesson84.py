@@ -9,6 +9,7 @@ import sklearn
 from sklearn.datasets import make_blobs
 from sklearn.model_selection import train_test_split
 from helper_functions import plot_predictions, plot_decision_boundary
+from torchmetrics import Accuracy
 
 ## Setup
 
@@ -191,11 +192,18 @@ print("y blob test", y_blob_test[:10])
     
 # Plot
 
-plt.figure(figsize=(10,7))
-plt.subplot(1, 2, 1)
-plt.title("Train")
-plot_decision_boundary(model_4, X_blob_train, y_blob_train)
-plt.subplot(1, 2, 2)
-plt.title("Test")
-plot_decision_boundary(model_4, X_blob_test, y_blob_test)
-plt.show()
+# plt.figure(figsize=(10,7))
+# plt.subplot(1, 2, 1)
+# plt.title("Train")
+# plot_decision_boundary(model_4, X_blob_train, y_blob_train)
+# plt.subplot(1, 2, 2)
+# plt.title("Test")
+# plot_decision_boundary(model_4, X_blob_test, y_blob_test)
+# plt.show()
+
+## Setup metric
+
+torchmetric_accuracy = Accuracy(task='multiclass', num_classes=NUM_CLASSES).to(device)
+
+# calculate acc
+print("torchmetrics: ", torchmetric_accuracy(y_preds, y_blob_test))
