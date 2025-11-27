@@ -186,7 +186,7 @@ class FashionMNISTModelV2(nn.Module):
         )
         self.classifier = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(in_features=hidden_units*0, # multiply by ???
+            nn.Linear(in_features=hidden_units, # multiply by results of conv blocks 1 & 2
                       out_features=output_shape)
         )
 
@@ -390,6 +390,9 @@ torch.manual_seed(42)
 model_2 = FashionMNISTModelV2(input_shape=1,
                               hidden_units=10,
                               output_shape=NUM_CLASSES).to(device)
+
+rand_image_tensor = torch.randn(size=(1, 28, 28))
+print(model_2(rand_image_tensor.to(device)))
 
 ## Compare results
 
