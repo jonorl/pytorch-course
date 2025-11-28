@@ -299,33 +299,35 @@ loaded_model_2.to(device)
 torch.manual_seed(42)
 torch.cuda.manual_seed(42)
 
-# Measure time
-train_time_start_model_2 = timer()
+## NO NEED TO RETRAIN EVERY TIME!
 
-# Create optimisation and eval loop using train_step() and test_step()
+# # Measure time
+# train_time_start_model_2 = timer()
 
-for epoch in tqdm(range(EPOCHS)):
-    print(f"Epoch: {epoch}\n-----------")
-    train_step(model=loaded_model_2,
-               data_loader=train_dataloader,
-               loss_fn=nn.CrossEntropyLoss(),
-               optimiser=torch.optim.SGD(params=loaded_model_2.parameters(), # Same as usual
-                            lr=0.1) ,
-               accuracy_fn=accuracy_fn,
-               device=device)
+# # Create optimisation and eval loop using train_step() and test_step()
+
+# for epoch in tqdm(range(EPOCHS)):
+#     print(f"Epoch: {epoch}\n-----------")
+#     train_step(model=loaded_model_2,
+#                data_loader=train_dataloader,
+#                loss_fn=nn.CrossEntropyLoss(),
+#                optimiser=torch.optim.SGD(params=loaded_model_2.parameters(), # Same as usual
+#                             lr=0.1) ,
+#                accuracy_fn=accuracy_fn,
+#                device=device)
     
-    test_step(model=loaded_model_2,
-              data_loader=test_dataloader,
-              loss_fn=nn.CrossEntropyLoss(),
-              accuracy_fn=accuracy_fn,
-              device=device)
+#     test_step(model=loaded_model_2,
+#               data_loader=test_dataloader,
+#               loss_fn=nn.CrossEntropyLoss(),
+#               accuracy_fn=accuracy_fn,
+#               device=device)
     
-train_time_end_model_2 = timer()
+# train_time_end_model_2 = timer()
 
-total_train_time_model_2 = print_train_time(start=train_time_start_model_2,
-                                            end=train_time_end_model_2,
-                                            device=device)
-print("total train Time:", total_train_time_model_2)
+# total_train_time_model_2 = print_train_time(start=train_time_start_model_2,
+#                                             end=train_time_end_model_2,
+#                                             device=device)
+# print("total train Time:", total_train_time_model_2)
 
 # Get Model_2 results dictionary
 
