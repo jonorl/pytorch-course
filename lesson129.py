@@ -124,8 +124,25 @@ print(f"Original shape:{img.shape} -> color, height, width")
 print(f"Image permute: {img_permute.shape} -> height, width, color")
 
 # Plot the image
-plt.figure(figsize=(10, 7))
-plt.imshow(img_permute)
-plt.axis("off")
-plt.title(class_names[label], fontsize=14)
-plt.show()
+# plt.figure(figsize=(10, 7))
+# plt.imshow(img_permute)
+# plt.axis("off")
+# plt.title(class_names[label], fontsize=14)
+# plt.show()
+
+from torch.utils.data import DataLoader
+BATCH_SIZE = 32
+CPU_COUNT = os.cpu_count()
+print(f"Number of CPU cores: {CPU_COUNT}")
+
+train_dataloader = DataLoader(dataset=train_data,
+                              batch_size=BATCH_SIZE,
+                              num_workers=CPU_COUNT,
+                              shuffle=True)
+
+test_dataloader = DataLoader(dataset=test_data,
+                              batch_size=BATCH_SIZE,
+                              num_workers=CPU_COUNT,
+                              shuffle=False)
+
+img, label = next(iter(train_dataloader))
