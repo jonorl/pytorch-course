@@ -3,6 +3,7 @@
 import torch
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
+import torchvision
 from torchvision import datasets, transforms
 from torchinfo import summary
 from pathlib import Path
@@ -408,3 +409,75 @@ print(f"total train Time:{total_train_time_model_1}")
 # plot_loss_curve(model_0_results)
 # plot_loss_curve(model_1_results)
 
+## Download any sample pizza image, name it to pizza.jpg and leave it on the data folder
+
+custom_image_path = data_path / "pizza.jpg"
+
+custom_image_uint8 = torchvision.io.read_image(custom_image_path)
+# print(custom_image_uint8)
+# plt.imshow(custom_image_uint8.permute(1, 2, 0))
+# plt.show()
+
+custom_image = custom_image_uint8.type(torch.float32) / 255 # we divide by 255 to have values between 0 and 1
+
+# Create transofrm pipeline to resize image
+custom_image_transform = transforms.Compose([
+                                             transforms.Resize(size=(64,64))
+])
+
+custom_image_transformed = custom_image_transform(custom_image)
+
+# print(custom_image_transformed.shape)
+
+model_1.eval()
+with torch.inference_mode():
+    custom_image_pred = model_1(custom_image_transformed.unsqueeze(0).to(device))
+
+# Convert logits to pred probs
+custom_image_pred_probs = torch.softmax(custom_image_pred, dim=1)
+
+# Convert pred probs to pred labels
+custom_image_pred_labels = torch.argmax(custom_image_pred_probs, dim=1)
+print(class_names_simple[custom_image_pred_labels])
+
+## Let's functionise it
+
+def pred_and_plot_image(model: torch.nn.Module,
+                        image_path: str,
+                        class_names: List[str] = None,
+                        transform=None,
+                        device=device):
+    """Makes a prediction on a target image"""
+    target_image = torchvision.io.read_image(str(image_path)).type(torch.float32) / 255
+
+    if transform:
+        target_image = transform(target_image)
+
+    model.to(device)
+
+    model.eval()
+    with torch.inference_mode():
+        target_image = target_image.unsqueeze(0)
+
+        target_image_pred = model(target_image.to(device))
+
+    target_image_pred_probs = torch.softmax(target_image_pred, dim=1)
+
+    target_image_pred_labels = torch.argmax(target_image_pred_probs, dim=1)
+    print(target_image_pred_labels)
+
+    plt.imshow(target_image.squeeze().permute(1, 2, 0))
+    if class_names:
+        title = f"Pred {class_names[target_image_pred_labels.cpu()]} | Prob: {target_image_pred_probs.max().cpu():.3f}"
+    else:
+        title = f"Pred: {target_image_pred_labels} | Prob: {target_image_pred_probs.max().cpu():.3f}"
+    plt.title(title)
+    plt.axis(False)
+    plt.show()
+    
+
+pred_and_plot_image(model=model_0,
+                    image_path=custom_image_path,
+                    class_names=class_names_simple,
+                    transform=custom_image_transform,
+                    device=device)
